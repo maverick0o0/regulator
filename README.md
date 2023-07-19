@@ -1,5 +1,7 @@
 # Project REGULATOR: Automated learning of regexes for DNS discovery
 
+https://cramppet.github.io/regulator/index.html
+
 I had a lot of fun making this and I hope this project will change the way you
 see subdomain enumeration. The method explored here is highly effective and
 efficient.
