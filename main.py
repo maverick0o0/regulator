@@ -1,6 +1,6 @@
 import re
 import string
-import logging
+# import logging
 import argparse
 
 from typing import List, Set
@@ -190,7 +190,7 @@ def sort_and_unique(file_name: str):
 def main():
   global DNS_CHARS, MEMO
 
-  logging.basicConfig(format='%(asctime)-15s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO, filename=LOGFILE_NAME, filemode='a')
+  # logging.basicConfig(format='%(asctime)-15s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO, filename=LOGFILE_NAME, filemode='a')
   parser = argparse.ArgumentParser(description='DNS Regulator')
   parser.add_argument('-th', '--threshold', required=False, type=int, default=500, help='Threshold to start performing ratio test')
   parser.add_argument('-mr', '--max-ratio', required=False, type=float, default=25.0, help='Ratio test parameter R: len(Synth)/len(Obs) < R')
@@ -202,7 +202,7 @@ def main():
   parser.add_argument('-o', '--output', required=False, type=str, help='Output filename (default: output)', default="output")
   args = vars(parser.parse_args())
 
-  logging.info(f'REGULATOR starting: MAX_RATIO={args["max_ratio"]}, THRESHOLD={args["threshold"]}')
+  # logging.info(f'REGULATOR starting: MAX_RATIO={args["max_ratio"]}, THRESHOLD={args["threshold"]}')
 
   trie = datrie.Trie(DNS_CHARS)
   known_hosts, new_rules = set([]), set([])
@@ -219,20 +219,20 @@ def main():
         if len(tokens) > 0 and len(tokens[0]) > 0 and len(tokens[0][0]) > 0:
           trie[host] = True
         else:
-          logging.warning(f'Rejecting malformed input: {host}')
+          # logging.warning(f'Rejecting malformed input: {host}')
           known_hosts.remove(host)
 
-  logging.info(f'Loaded {len(known_hosts)} observations')
-  logging.info('Building table of all pairwise distances...')
+  # logging.info(f'Loaded {len(known_hosts)} observations')
+  # logging.info('Building table of all pairwise distances...')
 
   for s, t in combinations_with_replacement(known_hosts, 2):
     MEMO[s+t] = editdistance.eval(s,t)
 
-  logging.info('Table building complete')
+  # logging.info('Table building complete')
 
   # No enforced prefix
   for k in range(args['dist_low'], args['dist_high']):
-    logging.info(f'k={k}')
+    # logging.info(f'k={k}')
     closures = edit_closures(known_hosts, delta=k)
     for closure in closures:
       if len(closure) > 1:
@@ -262,7 +262,7 @@ def main():
       
     last, prefixes = None, sorted(list(set([first_token(k) for k in trie.keys(ngram)])))
     for prefix in prefixes:
-      logging.info(f'Prefix={prefix}')
+      # logging.info(f'Prefix={prefix}')
       keys = trie.keys(prefix)
 
       # Second chance: use prefix tokens starting with the ngram
@@ -271,7 +271,7 @@ def main():
         if last is None or not prefix.startswith(last):
           last = prefix
         else:
-          logging.warning(f"Rejecting redundant prefix: {prefix}")
+          # logging.warning(f"Rejecting redundant prefix: {prefix}")
           continue
         new_rules.add(r)
 
@@ -286,7 +286,8 @@ def main():
 
             # Failure: we have no strategy for dealing with this
             elif r not in new_rules:
-              logging.error(f'Rule cannot be processed: {r}')
+              # logging.error(f'Rule cannot be processed: {r}')
+              pass
 
   #Saving rules with a static name
   with open(f"{args['target']}.rules", 'w') as handle:
